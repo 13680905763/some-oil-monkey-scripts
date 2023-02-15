@@ -1,5 +1,5 @@
 // ==UserScript==
-// @name         New Userscript
+// @name         问卷星自动答题
 // @namespace    http://tampermonkey.net/
 // @version      0.1
 // @description  try to take over the world!
@@ -13,85 +13,6 @@
   'use strict'
 
   // Your code here...
-  /*
-/*
-* @Author: ZhangYuHua
-* @Date: 2023-02-15 17:01:05
-* @LastEditors: ZhangYuHua
-* @LastEditTime: 2023-02-15 22:32:53
-* @Note: 未添加注意事项
-* @Description: 自动答问卷星脚本
-*/
-  /*
-   * @Author: ZhangYuHua
-   * @Date: 2023-02-15 17:01:05
-   * @LastEditors: ZhangYuHua
-   * @LastEditTime: 2023-02-15 22:43:00
-   * @Note: 未添加注意事项
-   * @Description: 自动答问卷星脚本
-   */
-  /*
-   * @Author: ZhangYuHua
-   * @Date: 2023-02-15 17:01:05
-   * @LastEditors: ZhangYuHua
-   * @LastEditTime: 2023-02-15 22:45:10
-   * @Note: 未添加注意事项
-   * @Description: 自动答问卷星脚本
-   */
-  /*
-   * @Author: ZhangYuHua
-   * @Date: 2023-02-15 17:01:05
-   * @LastEditors: ZhangYuHua
-   * @LastEditTime: 2023-02-15 23:04:06
-   * @Note: 未添加注意事项
-   * @Description: 自动答问卷星脚本
-   */
-
-  /*
-   * @Author: ZhangYuHua
-   * @Date: 2023-02-15 17:01:05
-   * @LastEditors: ZhangYuHua
-   * @LastEditTime: 2023-02-15 23:06:12
-   * @Note: 未添加注意事项
-   * @Description: 自动答问卷星脚本
-   */
-
-  /*
-   * @Author: ZhangYuHua
-   * @Date: 2023-02-15 17:01:05
-   * @LastEditors: ZhangYuHua
-   * @LastEditTime: 2023-02-15 23:07:43
-   * @Note: 未添加注意事项
-   * @Description: 自动答问卷星脚本
-   */
-
-  /*
-   * @Author: ZhangYuHua
-   * @Date: 2023-02-15 17:01:05
-   * @LastEditors: ZhangYuHua
-   * @LastEditTime: 2023-02-15 23:07:43
-   * @Note: 未添加注意事项
-   * @Description: 自动答问卷星脚本
-   */
-
-  // 初始化答题次数
-  /*
-   * @Author: ZhangYuHua
-   * @Date: 2023-02-15 17:01:05
-   * @LastEditors: ZhangYuHua
-   * @LastEditTime: 2023-02-15 23:11:20
-   * @Note: 未添加注意事项
-   * @Description: 自动答问卷星脚本
-   */
-
-  /*
-   * @Author: ZhangYuHua
-   * @Date: 2023-02-15 17:01:05
-   * @LastEditors: ZhangYuHua
-   * @LastEditTime: 2023-02-15 23:32:36
-   * @Note: 未添加注意事项
-   * @Description: 自动答问卷星脚本
-   */
 
   // 初始化答题次数
   if (!localStorage.getItem('submitNum')) {

@@ -11,97 +11,200 @@
 
 ;(function () {
   'use strict'
+  // 单选题
+  function singleProblem(problem) {
+    // 所有选项
+    const options = problem.querySelectorAll('input')
+    // 随机点一个
+    options[random(options.length) - 1].click()
+  }
+  // 多选题 -- （未优化，后续打乱数组点击）
+  function manyProblem(problem) {
+    // 所有选项
+    const options = shuffle([...problem.querySelectorAll('a')])
+    // 随机生成要点几个
+    const clickTime = random(options.length)
+    // 随机点几个
+    for (let i = 0; i < clickTime; i++) {
+      options[i].click()
+    }
+  }
+  // 下拉框题
+  function selectProblem(problem) {
+    console.log('---下拉框---未写')
+    // console.log(problem)
+    // document.querySelector('.selection').querySelector('span').click()
+    // console.log(problem)
+    // const select = [...problem.querySelectorAll('option')].filter((_, index) => index > 0)
+    // select[random(select.length) - 1].click()
+  }
 
-  // Your code here...
-
+  // 量表题
+  function scaleProblem(problem) {
+    const options = problem.querySelector('ul').querySelectorAll('li')
+    // 随机点一个
+    options[random(options.length) - 1].click()
+  }
+  // 矩形单选
+  function rSingleProblem(problem) {
+    const rows = [...problem.querySelectorAll('[tp="d"]')]
+    rows.forEach((row) => {
+      const options = row.querySelectorAll('a')
+      options[random(options.length) - 1].click()
+    })
+  }
+  // 排序题
+  function sortProblem(problem) {
+    console.log('排序题还没写完')
+    // const problem = document.querySelector('.ui-listview').querySelectorAll('li')
+    // const options = problem.querySelectorAll('li')
+    // console.log(options[0], options[1], options[2])
+    // options[1].click()
+    // console.log(options[0])
+    // options[0].click()ma
+    // options[2].click()
+    // console.log(options[0], options[1], options[2])
+    // const arr = [...new Array(options.length).keys()]
+    // arr.forEach((i) => {
+    //   document.querySelector('.ui-listview').querySelectorAll('li')[i].click?.()
+    // })
+    // arr.forEach((a) => {
+    //   console.log(options[a])
+    //   options[a].querySelector('input').checked = true
+    // })
+  }
+  //题型映射
+  const map = {
+    3: singleProblem,
+    4: manyProblem,
+    5: scaleProblem,
+    6: rSingleProblem,
+    7: selectProblem,
+    11: sortProblem
+  }
   // 初始化答题次数
-  if (!localStorage.getItem('submitNum')) {
-    localStorage.setItem('submitNum', 0)
+  if (!localStorage.getItem('submitTime')) {
+    localStorage.setItem('submitTime', 0)
+  }
+  // 初始化执行次数
+  if (!localStorage.getItem('runTime')) {
+    localStorage.setItem('runTime', 0)
   }
 
   // 从localStorage拿到当前答题次数
-  let submitNum = localStorage.getItem('submitNum')
+  let submitTime = localStorage.getItem('submitTime')
 
+  // 自动答卷的次数
+  let runTime = localStorage.getItem('runTime')
   // 拿到提交按钮
   const submit = document.querySelector('#ctlNext')
 
+  //绘制div
+  const divEl = document.createElement('div')
+  divEl.style.cssText = 'position:absolute;top:80px;left:20px;text-align:center;'
+  divEl.textContent = `当前是第${submitTime}次提交`
   // 绘制btn点击按钮
   const btnEl = document.createElement('button')
-  btnEl.textContent = `开始答题,第${submitNum}`
+  btnEl.textContent = `开始运行`
   btnEl.style.cssText =
-    'width:100px;height:50px;position:absolute;top:0;left:50%;background:beige;transform: translateX(-50%)'
+    'width:100%;height:30px;display:block;background:rgb(64,150,255);border:0;margin-top:2px;'
+
+  // 如果是第一次进入，绘制input框
+  if (submitTime == 0) {
+    const inputEl = document.createElement('input')
+    inputEl.type = 'number'
+    inputEl.placeholder = '请输入自动填写的份数'
+    inputEl.style.cssText = 'display:block'
+    divEl.appendChild(inputEl)
+  }
+  divEl.appendChild(btnEl)
+
+  document.querySelector('body').appendChild(divEl)
 
   // 监听btn点击事件
   btnEl.addEventListener('click', () => {
-    // 随机答题
-    singleOption()
-    tableSingleOption()
-
-    //执行表单提交
-    submit.click()
-    // 答题次数+1,更新本地存储答题次数
-    localStorage.setItem('submitNum', ++submitNum)
-
-    // 被盾有验证
-    setTimeout(() => {
-      if (document.querySelector('#captcha').style.display === 'block') {
-        console.log('被盾了')
-        // 移除遮罩层
-        document.querySelector('.layui-layer-shade').remove()
-        document.querySelector('#SM_BTN_1').click()
-        setTimeout(() => {
-          removeValidation()
-        }, 3000)
+    if (runTime == 0) {
+      const inputValue = divEl.querySelector('input')?.value
+      if (inputValue) {
+        localStorage.setItem('runTime', inputValue)
+        // 开始答题
+        resolveProblem()
+      } else {
+        alert('请输入需要执行的次数')
       }
-    }, 1000)
-  })
-  document.querySelector('body').appendChild(btnEl)
+    } else if (runTime > submitTime) {
+      // 当前答题次数小于目标答题次数
+      // 继续答题
+      resolveProblem()
+    }
 
+    // 随机答题
+    //执行表单提交
+    // setTimeout(() => {
+    //   submit.click()
+    // }, 3000)
+    // // 答题次数+1,更新本地存储答题次数
+    // localStorage.setItem('submitTime', ++submitTime)
+    // // 被盾有验证
+    // setTimeout(() => {
+    //   if (document.querySelector('#captcha').style.display === 'block') {
+    //     console.log('被盾了')
+    //     // 移除遮罩层
+    //     document.querySelector('.layui-layer-shade').remove()
+    //     document.querySelector('#SM_BTN_1').click()
+    //     setTimeout(() => {
+    //       removeValidation()
+    //     }, 3000)
+    //   }
+    // }, 4000)
+  })
+
+  // 打乱数组
+  function shuffle(a) {
+    var length = a.length
+    var shuffled = Array(length)
+    for (var index = 0, rand; index < length; index++) {
+      rand = ~~(Math.random() * (index + 1))
+      if (rand !== index) shuffled[index] = shuffled[rand]
+      shuffled[rand] = a[index]
+    }
+    return shuffled
+  }
   function random(length) {
     // 传入选项个数，随机生成一个选择的答案
     return Math.floor(Math.random() * length) + 1
   }
-  // 自动选中单选题
-  function singleOption() {
-    //拿到所有的题
-    const problem = document.querySelectorAll('.ui-controlgroup')
-    problem.forEach((item) => {
-      const option = item.querySelectorAll('.ui-radio')
-      option[random(option.length) - 1].click()
-    })
-  }
-  //表格单选题
-  function tableSingleOption() {
-    //拿到所有的题
-    const problem = document.querySelectorAll('[tp="d"]')
-    problem.forEach((item) => {
-      const option = [...item.querySelectorAll('td')].filter((item, index) => index > 0)
-      option[random(option.length) - 1].click()
+
+  function resolveProblem() {
+    // 拿到所有的题
+    const problem = document.querySelectorAll('.ui-field-contain')
+    problem.forEach((p) => {
+      map[p.getAttribute('type')]?.(p)
     })
   }
 
   // 监听页面跳转
-  setInterval(() => {
-    const reg = /www.wjx.cn\/vm\/ml0IbRr.aspx/
-    if (!reg.test(location.href)) {
-      location.href = 'https://www.wjx.cn/vm/ml0IbRr.aspx'
-    }
-  }, 2000)
+  // setInterval(() => {
+  //   const reg = /www.wjx.cn\/vm\/ml0IbRr.aspx/
+  //   if (!reg.test(location.href)) {
+  //     location.href = 'https://www.wjx.cn/vm/ml0IbRr.aspx'
+  //   }
+  // }, 2000)
 
-  function removeValidation() {
-    //监听验证
-    console.log('监听验证')
-    if (document.querySelector('#nc_1__bg')) {
-      console.log('破解滑块中')
-      document.querySelector('#SM_POP_1').remove()
-      document.querySelector('#SM_BTN_1').click()
-    }
-    // if (document.querySelector('#SM_BTN_1')) {
-    //   document.querySelector('#SM_BTN_1').click()
-    // }
-  }
-  // 自动点击
-  setTimeout(() => {
-    btnEl.click()
-  }, 1000)
+  // function removeValidation() {
+  //   //监听验证
+  //   console.log('监听验证')
+  //   if (document.querySelector('#nc_1__bg')) {
+  //     console.log('破解滑块中')
+  //     document.querySelector('#SM_POP_1').remove()
+  //     document.querySelector('#SM_BTN_1').click()
+  //   }
+  //   // if (document.querySelector('#SM_BTN_1')) {
+  //   //   document.querySelector('#SM_BTN_1').click()
+  //   // }
+  // }
+  // // 自动点击
+  // setTimeout(() => {
+  //   btnEl.click()
+  // }, 1000)
 })()

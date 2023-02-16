@@ -14,7 +14,7 @@
   // 单选题
   function singleProblem(problem) {
     // 所有选项
-    const options = problem.querySelectorAll('input')
+    const options = problem.querySelectorAll('.ui-radio')
     // 随机点一个
     options[random(options.length) - 1].click()
   }
@@ -56,6 +56,8 @@
   // 排序题
   function sortProblem(problem) {
     console.log('排序题还没写完')
+    console.log(problem[1].click())
+    problem[1].click()
     // const problem = document.querySelector('.ui-listview').querySelectorAll('li')
     // const options = problem.querySelectorAll('li')
     // console.log(options[0], options[1], options[2])
@@ -90,24 +92,31 @@
   if (!localStorage.getItem('runTime')) {
     localStorage.setItem('runTime', 0)
   }
-
+  // 初始化问卷地址
+  if (!localStorage.getItem('pageUrl')) {
+    localStorage.setItem('pageUrl', location.href)
+  }
+  // console.log(pageUrl.match(/$/));
   // 从localStorage拿到当前答题次数
   let submitTime = localStorage.getItem('submitTime')
 
   // 自动答卷的次数
   let runTime = localStorage.getItem('runTime')
+
+  // 问卷地址
+  let pageUrl = localStorage.getItem('pageUrl')
   // 拿到提交按钮
   const submit = document.querySelector('#ctlNext')
 
   //绘制div
   const divEl = document.createElement('div')
-  divEl.style.cssText = 'position:absolute;top:80px;left:20px;text-align:center;'
-  divEl.textContent = `当前是第${submitTime}次提交`
+  divEl.style.cssText = 'position:absolute;top:5rem;left:1.25rem;text-align:center;'
+  divEl.textContent = `已完成${submitTime}次提交`
   // 绘制btn点击按钮
   const btnEl = document.createElement('button')
   btnEl.textContent = `开始运行`
   btnEl.style.cssText =
-    'width:100%;height:30px;display:block;background:rgb(64,150,255);border:0;margin-top:2px;'
+    'width:100%;height:1.875rem;display:block;background:rgb(64,150,255);border:0;margin-top:.125rem;'
 
   // 如果是第一次进入，绘制input框
   if (submitTime == 0) {
@@ -132,10 +141,17 @@
       } else {
         alert('请输入需要执行的次数')
       }
-    } else if (runTime > submitTime) {
+    } else if (submitTime < runTime) {
       // 当前答题次数小于目标答题次数
       // 继续答题
       resolveProblem()
+    } else {
+      console.log('执行完毕')
+      clearInterval(listenUrl)
+      localStorage.removeItem('submitTime')
+      localStorage.removeItem('runTime')
+      localStorage.removeItem('pageUrl')
+      alert('脚本执行完毕，请关闭当前窗口')
     }
 
     // 随机答题
@@ -150,7 +166,7 @@
     //   if (document.querySelector('#captcha').style.display === 'block') {
     //     console.log('被盾了')
     //     // 移除遮罩层
-    //     document.querySelector('.layui-layer-shade').remove()
+    //     document.querySelector('.layui-layer-shade')NaNpxove()
     //     document.querySelector('#SM_BTN_1').click()
     //     setTimeout(() => {
     //       removeValidation()
@@ -178,33 +194,56 @@
   function resolveProblem() {
     // 拿到所有的题
     const problem = document.querySelectorAll('.ui-field-contain')
-    problem.forEach((p) => {
-      map[p.getAttribute('type')]?.(p)
+    problem.forEach((p, i) => {
+      setTimeout(() => {
+        map[p.getAttribute('type')]?.(p)
+      }, i * 500)
     })
+    setTimeout(() => {
+      submit.click()
+    }, problem.length * 500)
   }
 
   // 监听页面跳转
-  // setInterval(() => {
-  //   const reg = /www.wjx.cn\/vm\/ml0IbRr.aspx/
-  //   if (!reg.test(location.href)) {
-  //     location.href = 'https://www.wjx.cn/vm/ml0IbRr.aspx'
-  //   }
-  // }, 2000)
 
-  // function removeValidation() {
-  //   //监听验证
-  //   console.log('监听验证')
-  //   if (document.querySelector('#nc_1__bg')) {
-  //     console.log('破解滑块中')
-  //     document.querySelector('#SM_POP_1').remove()
-  //     document.querySelector('#SM_BTN_1').click()
-  //   }
-  //   // if (document.querySelector('#SM_BTN_1')) {
-  //   //   document.querySelector('#SM_BTN_1').click()
-  //   // }
-  // }
-  // // 自动点击
-  // setTimeout(() => {
-  //   btnEl.click()
-  // }, 1000)
+  const listenUrl = setInterval(() => {
+    console.log('监听url...')
+    // if (submitTime <= runTime && runTime !== '0') {
+    //   console.log('按钮点击')
+    //   btnEl.click()
+    // }
+    if (location.href !== pageUrl) {
+      localStorage.setItem('submitTime', ++submitTime)
+      location.href = pageUrl
+    }
+
+    // // 有验证弹窗
+    // const layer = document.querySelector('.layui-layer-shade')
+    // const layer1 = document.querySelector('.layui-layer')
+    // if (layer && layer1) {
+    //   layer.remove()
+    //   layer1.remove()
+    //   // document.querySelector('#SM_BTN_1').click()
+    // }
+    // // 有验证按钮
+    // const verificationBtn = document.querySelector('#rectMask')
+    // if (verificationBtn) {
+    //   console.log('检测到验证按钮，准备移除...')
+    //   console.log('抱歉无法移除。。。')
+    //   // verificationBtn.click()
+    // }
+    // const slider = document.querySelector('#SM_POP_1')
+    // if (slider) {
+    //   console.log('检测到滑块，准备移除...')
+    //   console.log('抱歉无法移除。。。')
+    // }
+  }, 2000)
+
+  // 自动点击
+  setTimeout(() => {
+    if (submitTime <= runTime && runTime !== '0') {
+      console.log('按钮点击')
+      btnEl.click()
+    }
+  }, 1000)
 })()

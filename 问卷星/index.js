@@ -18,7 +18,7 @@
     // 随机点一个
     options[random(options.length) - 1].click()
   }
-  // 多选题 -- （未优化，后续打乱数组点击）
+  // 多选题
   function manyProblem(problem) {
     // 所有选项
     const options = shuffle([...problem.querySelectorAll('a')])
@@ -38,7 +38,6 @@
     // const select = [...problem.querySelectorAll('option')].filter((_, index) => index > 0)
     // select[random(select.length) - 1].click()
   }
-
   // 量表题
   function scaleProblem(problem) {
     const options = problem.querySelector('ul').querySelectorAll('li')
@@ -63,7 +62,7 @@
     // console.log(options[0], options[1], options[2])
     // options[1].click()
     // console.log(options[0])
-    // options[0].click()ma
+    // options[0].click()
     // options[2].click()
     // console.log(options[0], options[1], options[2])
     // const arr = [...new Array(options.length).keys()]
@@ -96,13 +95,10 @@
   if (!localStorage.getItem('pageUrl')) {
     localStorage.setItem('pageUrl', location.href)
   }
-  // console.log(pageUrl.match(/$/));
   // 从localStorage拿到当前答题次数
   let submitTime = localStorage.getItem('submitTime')
-
   // 自动答卷的次数
   let runTime = localStorage.getItem('runTime')
-
   // 问卷地址
   let pageUrl = localStorage.getItem('pageUrl')
   // 拿到提交按钮
@@ -153,26 +149,6 @@
       localStorage.removeItem('pageUrl')
       alert('脚本执行完毕，请关闭当前窗口')
     }
-
-    // 随机答题
-    //执行表单提交
-    // setTimeout(() => {
-    //   submit.click()
-    // }, 3000)
-    // // 答题次数+1,更新本地存储答题次数
-    // localStorage.setItem('submitTime', ++submitTime)
-    // // 被盾有验证
-    // setTimeout(() => {
-    //   if (document.querySelector('#captcha').style.display === 'block') {
-    //     console.log('被盾了')
-    //     // 移除遮罩层
-    //     document.querySelector('.layui-layer-shade')NaNpxove()
-    //     document.querySelector('#SM_BTN_1').click()
-    //     setTimeout(() => {
-    //       removeValidation()
-    //     }, 3000)
-    //   }
-    // }, 4000)
   })
 
   // 打乱数组
@@ -190,53 +166,51 @@
     // 传入选项个数，随机生成一个选择的答案
     return Math.floor(Math.random() * length) + 1
   }
-
+  // 答题函数
   function resolveProblem() {
-    // 拿到所有的题
-    const problem = document.querySelectorAll('.ui-field-contain')
-    problem.forEach((p, i) => {
-      setTimeout(() => {
-        map[p.getAttribute('type')]?.(p)
-      }, i * 500)
-    })
-    setTimeout(() => {
+    const promise = new Promise((resolve, reject) => {
+      // 拿到所有的题
+      const problems = document.querySelectorAll('.ui-field-contain')
+      problems.forEach((problem) => {
+        map[problem.getAttribute('type')]?.(problem)
+      })
       submit.click()
-    }, problem.length * 500)
+      setTimeout(() => {
+        // 遮罩层
+        const layui = document.querySelector('.layui-layer-shade')
+        // 验证按钮
+        const verificationBtn = document.querySelector('#rectMask')
+        // const slider = document.querySelector('#SM_POP_1')
+        // if (slider) {
+        //   reject('抱歉无法移除滑块。。。')
+        // }
+        if (layui || verificationBtn) {
+          // 有点击验证
+          reject([layui, verificationBtn])
+        } else {
+          resolve()
+        }
+      }, 1000)
+    })
+    promise.then(
+      (res) => {
+        console.log('提交成功')
+        localStorage.setItem('submitTime', ++submitTime)
+      },
+      (e) => {
+        console.log('验证中...')
+        e[0]?.remove()
+        e[1]?.click()
+      }
+    )
   }
 
   // 监听页面跳转
-
   const listenUrl = setInterval(() => {
     console.log('监听url...')
-    // if (submitTime <= runTime && runTime !== '0') {
-    //   console.log('按钮点击')
-    //   btnEl.click()
-    // }
     if (location.href !== pageUrl) {
-      localStorage.setItem('submitTime', ++submitTime)
       location.href = pageUrl
     }
-
-    // // 有验证弹窗
-    // const layer = document.querySelector('.layui-layer-shade')
-    // const layer1 = document.querySelector('.layui-layer')
-    // if (layer && layer1) {
-    //   layer.remove()
-    //   layer1.remove()
-    //   // document.querySelector('#SM_BTN_1').click()
-    // }
-    // // 有验证按钮
-    // const verificationBtn = document.querySelector('#rectMask')
-    // if (verificationBtn) {
-    //   console.log('检测到验证按钮，准备移除...')
-    //   console.log('抱歉无法移除。。。')
-    //   // verificationBtn.click()
-    // }
-    // const slider = document.querySelector('#SM_POP_1')
-    // if (slider) {
-    //   console.log('检测到滑块，准备移除...')
-    //   console.log('抱歉无法移除。。。')
-    // }
   }, 2000)
 
   // 自动点击
